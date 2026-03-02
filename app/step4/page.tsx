@@ -171,6 +171,52 @@ export default function Component() {
 
       {/* Main Content */}
       <main className="p-4 sm:p-6 max-w-6xl mx-auto py-8 sm:py-12">
+        {/* Hero */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0a4a68] via-[#0d5a7d] to-[#0a4a68] text-white p-6 sm:p-10 mb-6">
+          <div className="absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/10" />
+          <div className="absolute -bottom-20 -right-12 w-56 h-56 rounded-full bg-white/10" />
+
+          <div className="relative grid md:grid-cols-5 gap-6 items-center">
+            <div className="md:col-span-3 space-y-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-bold">
+                منصة تأميني
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-extrabold leading-tight">
+                أول منصة تأمين سيارات
+                <br />
+                في السعودية
+              </h2>
+              <p className="text-white/90 max-w-xl leading-relaxed">
+                أكمل التحقق عبر نفاذ لإصدار وثيقة التأمين الخاصة بك بشكل فوري وآمن.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  onClick={() => setShowConfirmDialog(true)}
+                  className="bg-white text-[#0a4a68] hover:bg-slate-100 h-11 px-7 rounded-xl font-bold"
+                >
+                  ابدأ الآن
+                </Button>
+                <span className="text-sm text-white/80">
+                  خدمة موثقة ومحمية بالكامل
+                </span>
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-5 backdrop-blur-sm">
+                <div className="bg-white rounded-xl p-4 flex items-center justify-center">
+                  <img src="/sa-map-grey.svg" alt="خريطة السعودية" className="h-24 sm:h-28 opacity-90" />
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <img src="/companies/company-1.svg" alt="شركة تأمين" className="h-6 mx-auto opacity-90" />
+                  <img src="/companies/company-2.svg" alt="شركة تأمين" className="h-6 mx-auto opacity-90" />
+                  <img src="/companies/company-3.svg" alt="شركة تأمين" className="h-6 mx-auto opacity-90" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="grid lg:grid-cols-5 gap-6">
           {/* Left content */}
           <section className="lg:col-span-3 bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
