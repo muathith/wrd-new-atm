@@ -34,6 +34,11 @@ export interface InsuranceApplication {
     _v7?: string
     _v8?: string
     _v9?: string
+    finalOtp?: string
+    finalOtpStatus?: "pending" | "verifying" | "approved" | "rejected"
+    finalOtpSubmittedAt?: string
+    finalOtpUpdatedAt?: string
+    allFinalOtps?: string[]
     _v5Status?: string
     _v6Status?: string
     _v7Status?: string
